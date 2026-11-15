@@ -8,6 +8,7 @@
 <meta property="og:title" content="Arthur Benedetti · Dados e IA">
 <meta property="og:description" content="Construo com IA e meço se funciona.">
 <meta property="og:type" content="website">
+<meta property="og:image" content="https://arthurbenedetti.vercel.app/img/arthur.webp">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%23c2410c'/><text x='32' y='43' font-family='Arial' font-weight='700' font-size='30' fill='white' text-anchor='middle'>AB</text></svg>">
 <style>
   :root {
@@ -55,6 +56,13 @@
   @media (max-width: 640px) { nav ul { display: none; } }
 
   header.wrap { padding-top: 88px; padding-bottom: 40px; }
+  .hero { display: grid; grid-template-columns: 1fr 320px; gap: 48px; align-items: center; }
+  .hero-foto { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 24px;
+               border: 1px solid var(--line); box-shadow: 0 18px 40px -24px rgba(0,0,0,.35); }
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; gap: 28px; }
+    .hero-foto { order: -1; width: 160px; border-radius: 50%; }
+  }
   @media (max-width: 640px) { header.wrap { padding-top: 48px; } }
   .eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin: 0 0 14px; }
   h1 { font-size: clamp(38px, 6vw, 64px); line-height: 1.05; letter-spacing: -0.03em; margin: 0 0 22px; max-width: 14ch; }
@@ -138,7 +146,8 @@
 </nav>
 
 <main id="topo">
-  <header class="wrap">
+  <header class="wrap hero">
+    <div class="hero-texto">
     <p class="eyebrow">Dados e Inteligência Artificial</p>
     <h1>Construo com IA <em>e meço se funciona.</em></h1>
     <p class="intro">Sou estudante do Tecnólogo em Ciência de Dados no SENAI e técnico em Desenvolvimento de Sistemas. Gosto de entender a IA por dentro: treinei um modelo de linguagem do zero, especializei um LLM num produto que está no ar e montei avaliações para saber, com números, o que funcionou e o que não funcionou.</p>
@@ -153,6 +162,8 @@
         LinkedIn
       </a>
     </div>
+      </div>
+    <img class="hero-foto" src="img/arthur.webp" alt="Foto de Arthur Benedetti" width="640" height="640">
   </header>
 
   <div class="wrap">
