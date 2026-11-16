@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Consulta rápida iFood</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: ferramenta de treino, direta e calma
+   IDEA: um fichário de respostas que abre na ficha certa ao digitar
+   PICTURE: a barra de busca grande na faixa vermelha, com as fichas logo abaixo
+   COLOUR and TYPE: vermelho iFood como campo, branco, tinta escura; Outfit + Inter
+   LAYOUT: faixa de busca no topo, filtros, fichas em coluna; modo treino troca as fichas por uma ficha só */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#141012);--soft:light-dark(#f6f3f3,#1f1a1c);--ink:light-dark(#1b1416,#f4eeef);--mut:light-dark(#6b5f62,#b3a7aa);--line:light-dark(#e7dfe0,#332a2d);--red:#ea1d2c;--redk:light-dark(#c4111f,#ff5b66);--card:light-dark(#ffffff,#1b1618)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
+h1,h2,.q{font-family:Outfit,Inter,sans-serif}
+.top{background:var(--red);color:#fff;padding:clamp(24px,4vw,48px) max(5vw,16px) 28px}
+.top .in,.main{max-width:860px;margin:0 auto}
+h1{font-size:clamp(30px,5vw,44px);line-height:1.05;margin:0 0 6px;font-weight:700;text-wrap:balance}
+.top p{margin:0 0 20px;opacity:.92;max-width:60ch}
+.busca{display:flex;gap:10px;flex-wrap:wrap}
+.busca input{flex:1 1 260px;font:500 18px Inter,sans-serif;padding:16px 18px;border-radius:14px;border:0;background:#fff;color:#1b1416;outline:none;min-height:56px}
+.busca input:focus-visible{box-shadow:0 0 0 3px #1b1416}
+.busca button{font:600 16px Inter,sans-serif;min-height:56px;padding:0 20px;border-radius:14px;border:2px solid #fff;background:transparent;color:#fff;cursor:pointer}
+.busca button:hover{background:rgba(255,255,255,.14)}
+.busca button:focus-visible,.chip:focus-visible,.acao:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.dicas{margin-top:12px;font-size:14px;opacity:.9}
+.dicas b{font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.main{padding:20px max(5vw,16px) 64px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 14px}
+.chip{font:500 14px Inter,sans-serif;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.conta{color:var(--mut);font-size:14px;margin:0 0 12px}
+.ficha{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:18px 20px;margin-bottom:12px}
+.ficha .et{font-size:13px;color:var(--redk);font-weight:600;margin-bottom:4px}
+.q{font-size:20px;line-height:1.25;font-weight:600;margin:0 0 10px}
+.a{margin:0;white-space:pre-line}
+.a b{font-weight:600}
+mark{background:light-dark(#ffe1e3,#5a1d23);color:inherit;border-radius:3px;padding:0 2px}
+.vazio{padding:28px;text-align:center;color:var(--mut);border:1px dashed var(--line);border-radius:16px}
+.treino{border:2px solid var(--red);border-radius:20px;padding:clamp(20px,4vw,36px);background:var(--card)}
+.treino .q{font-size:clamp(22px,3.4vw,28px)}
+.oculta{color:var(--mut);font-style:italic}
+.acoes{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.acao{font:600 16px Inter,sans-serif;min-height:48px;padding:0 20px;border-radius:12px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.acao.pri{background:var(--red);border-color:var(--red);color:#fff}
+.relogio{font:600 15px Inter,sans-serif;color:var(--mut);margin-left:auto;align-self:center;font-variant-numeric:tabular-nums}
+.aviso{font-size:14px;color:var(--mut);margin-top:28px}
+@media (prefers-reduced-motion:no-preference){.ficha,.treino{animation:sobe .25s ease-out}@keyframes sobe{from{opacity:0;transform:translateY(6px)}}}
+@media(max-width:600px){.q{font-size:18px}.busca button{flex:1}.relogio{margin-left:0;width:100%}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="in">
+    <h1>Consulta rápida: iFood GenAI</h1>
+    <p>Digite uma palavra-chave e a resposta aparece na hora. Use o modo treino para responder em voz alta antes de ver a resposta.</p>
+    <div class="busca">
+      <input id="busca" type="search" placeholder="Ex.: erro, overfitting, por que iFood, zelos…" autocomplete="off" aria-label="Palavra-chave">
+      <button id="btnTreino" type="button">Modo treino</button>
+    </div>
+    <div class="dicas">Tente: <b data-k="sobre voce">sobre você</b> · <b data-k="erro">erro</b> · <b data-k="equipe">equipe</b> · <b data-k="rag">RAG</b> · <b data-k="93%">93%</b> · <b data-k="ponto fraco">ponto fraco</b></div>
+  </div>
+</header>
+<main class="main">
+  <div class="chips" id="chips" role="group" aria-label="Filtrar por etapa"></div>
+  <p class="conta" id="conta"></p>
+  <div id="lista"></div>
+  <p class="aviso">Isto é para treinar. Na entrevista, fale com as suas palavras: resposta lida soa robótica, e a IA avalia naturalidade.</p>
+</main>
+<script>
+{
+const D=[
+// ---------- Etapa 1 ----------
+{e:'Etapa 1',k:'sobre voce apresentacao quem e voce fale de voce genai motivacao por que participar',q:'Fale sobre você e por que quer participar do GenAI.',a:'Sou o Arthur Benedetti, estudante do Tecnólogo em Ciência de Dados no SENAI e técnico em Desenvolvimento de Sistemas. Comecei a estudar IA construindo. Treinei um modelo de linguagem do zero e descobri, com validação, o momento em que ele parava de aprender e começava a decorar. Depois criei o Only English, um coach de inglês por voz que está no ar, com um LLM que eu especializei para erros de brasileiros. Testei meu prompt contra um genérico em 80 frases: ele não detectava mais erros, mas deixava as respostas muito mais confiáveis. Aprendi que, em IA, quem decide é a medição.\nQuero participar porque quero ver isso em escala real. Uso o iFood e sempre me chamou atenção como a recomendação acerta o que eu quero pedir. Quero entender como vocês constroem e medem isso para milhões de pessoas, aprendendo com quem faz isso todo dia.'},
+{e:'Etapa 1',k:'por que ia inteligencia artificial interesse motivacao',q:'Por que você quer trabalhar com IA?',a:'Porque é a área em que construir e medir andam juntos. Quando treinei meu primeiro modelo, achei que ele estava ótimo olhando só o loss de treino. Quando separei uma parte do texto para testar, vi que ele estava decorando. Essa diferença entre parecer funcionar e funcionar de verdade é o que me prende em IA.'},
+{e:'Etapa 1',k:'por que ifood empresa escolha',q:'Por que o iFood?',a:'Primeiro, porque o iFood usa IA em produtos que eu uso todo dia, como a recomendação. Segundo, porque o programa junta o que eu já faço sozinho, projetos reais, com mentoria de gente experiente. Eu aprendo construindo, e aqui eu construiria com impacto em milhões de pessoas.'},
+{e:'Etapa 1',k:'projeto orgulho star only english conquista',q:'Conte sobre um projeto do qual você se orgulha. (STAR)',a:'<b>Situação:</b> quem aprende inglês no Brasil quase nunca tem com quem conversar e ser corrigido na hora.\n<b>Tarefa:</b> criar um coach por voz que corrigisse os erros típicos de brasileiros.\n<b>Ação:</b> usei a transcrição do navegador e um LLM pela API da Groq, escrevi um prompt por nível com regras pedagógicas e exemplos, e fiz o modelo responder em JSON que o servidor confere. Depois montei uma avaliação com 80 frases para comparar com um prompt genérico.\n<b>Resultado:</b> os dois detectam quase igual, mas o meu reduziu as correções inválidas de 33% para 1%, sem alarmes falsos. E descobri que, num modelo menor, meu prompt longo atrapalhava, então o site usa o modelo maior.'},
+{e:'Etapa 1',k:'erro falha aprendeu fracasso engano',q:'Conte sobre um erro que você cometeu e o que aprendeu.',a:'No meu modelo de linguagem, eu treinei 300 épocas olhando só o loss de treino, que caiu até 1,3, e escrevi que ele já acertava frases do livro. Quando revisei, vi que o resultado mostrava o contrário. O erro foi não ter uma prova separada. Corrigi separando 10% do texto como validação e descobri que ele começava a decorar na época 31. Hoje eu não confio num resultado que eu não medi em dados novos.'},
+{e:'Etapa 1',k:'desafio dificil problema obstaculo gpu',q:'Conte sobre um desafio difícil e como você resolveu.',a:'Treinar um modelo de linguagem sem GPU, só no meu PC. O tutorial que eu segui era grande demais para o meu computador. Reduzi o modelo para 4,5 milhões de parâmetros e mudei o preparo dos dados: em vez de descartar as linhas longas do livro, juntei tudo e cortei em blocos de 128 tokens. Assim usei o livro inteiro e o treino levou poucos minutos.'},
+{e:'Etapa 1',k:'aprende aprender estudar novo',q:'Como você aprende algo novo?',a:'Construindo um projeto pequeno e real. Para aprender LLMs, treinei um do zero. Para aprender a usar uma API de IA, fiz o Only English. Uso tutoriais e IA para estudar, mas sempre reviso e testo, e só considero que aprendi quando consigo explicar e medir o resultado.'},
+{e:'Etapa 1',k:'usa ia dia a dia claude code ferramentas',q:'Como você usa IA no seu dia a dia?',a:'Uso o Claude Code para programar, mas sempre lendo e testando o que ele gera, porque eu preciso saber explicar cada parte. Uso também para estudar conceitos. E construo com IA: integrei um LLM num produto e treinei um modelo do zero.'},
+{e:'Etapa 1',k:'equipe time grupo zelos trabalho em equipe colaboracao back-end backend integracao',q:'Conte sobre uma vez em que você trabalhou em equipe.',a:'No Zelos, um sistema de chamados de manutenção que fizemos no curso técnico, cada pessoa cuidava de uma parte. Eu fiquei com o back-end e a integração: a API em Node.js com Express, a conexão com o banco MySQL e a ligação do back-end com o front. O mais importante foi combinar o formato dos dados entre o front e o back antes de programar, para não retrabalhar.'},
+{e:'Etapa 1',k:'futuro anos daqui carreira se ve',q:'Onde você se vê daqui a alguns anos?',a:'Trabalhando como engenheiro de IA, construindo produtos com modelos que ajudam muitas pessoas e sabendo provar que eles funcionam. Quero aprofundar em avaliação e em colocar modelos em produção.'},
+{e:'Etapa 1',k:'ponto fraco fraqueza defeito melhorar',q:'Qual é o seu ponto fraco?',a:'Estatística mais avançada. Uso o básico nas minhas avaliações, como intervalo de confiança e validação, mas ainda estou estudando no curso. Por isso, nos meus projetos, eu sempre comparo com um baseline simples, para não me enganar com o resultado.'},
+// ---------- Etapa 3 ----------
+{e:'Etapa 3',k:'trilha ai engineer ai builder por que',q:'Por que a trilha AI Engineer e não a AI Builder?',a:'Porque o que eu mais gosto é construir o sistema por dentro: integrar o modelo, validar a resposta, medir se funciona. No Only English eu fiz isso, do servidor à avaliação. Sou técnico em Desenvolvimento de Sistemas, então engenharia é onde eu mais contribuo.'},
+{e:'Etapa 3',k:'disponibilidade horario 30 horas fevereiro aulas noite formatura',q:'Você tem disponibilidade de 30 horas por semana a partir de fevereiro?',a:'Sim. Minhas aulas são à noite, das 18h às 22h30, então tenho o dia livre para as 6 horas de estágio. Me formo em dezembro de 2027.'},
+{e:'Etapa 3',k:'outros processos seletivos vagas',q:'Você está em outros processos seletivos?',a:'Estou em alguns processos de estágio em dados e tecnologia, mas o GenAI é a minha prioridade, porque é exatamente a área em que eu quero crescer.'},
+{e:'Etapa 3',k:'sabe sobre ifood empresa rosie pedidos proposito',q:'O que você sabe sobre o iFood?',a:'É uma das maiores empresas de tecnologia da América Latina e usa IA em várias partes do produto, como recomendação, logística de entrega e atendimento. São mais de 120 milhões de pedidos por mês, e o propósito é "alimentar o futuro do mundo". A Rosie, assistente de IA para atendimento, chegou em 2022. Este é o segundo ano do GenAI, e agora ele também aceita recém-formados.'},
+{e:'Etapa 3',k:'feedback critica revisao',q:'Como você lida com feedback?',a:'Gosto de feedback específico. Nos meus projetos, pedi revisões e uma delas apontou que meu notebook dizia uma coisa e o resultado mostrava outra. Em vez de defender, corrigi: criei a validação e reescrevi a conclusão com os números reais.'},
+{e:'Etapa 3',k:'prazo apertado pressao tempo urgencia',q:'Como você lida com prazo apertado?',a:'Quebro a tarefa em partes e entrego primeiro a versão simples que funciona. Para esta inscrição, em uma semana organizei o portfólio, publiquei o modelo no Hugging Face e avaliei o Only English, sempre priorizando o que tinha mais impacto.'},
+{e:'Etapa 3',k:'maior conquista orgulho',q:'Qual foi sua maior conquista até agora?',a:'Colocar no ar um produto com IA que eu construí sozinho, o Only English, e conseguir provar com números onde ele funciona e onde não funciona.'},
+{e:'Etapa 3',k:'atualizado novidades acompanha estudar',q:'Como você se mantém atualizado em IA?',a:'Construindo. Quando aparece um conceito novo, eu faço um projeto pequeno para testar. Também acompanho documentações, como a do Hugging Face, e cursos do SENAI. (Cite um canal ou newsletter que você acompanha de verdade.)'},
+// ---------- Etapa 4 ----------
+{e:'Etapa 4',k:'arquitetura only english como funciona groq vercel serverless redis',q:'Desenhe a arquitetura do Only English.',a:'A voz é transcrita no navegador pela Web Speech API. O texto vai para uma função serverless da Vercel, que guarda a chave da Groq. Ela monta o prompt do nível do aluno, chama o gpt-oss-120b em modo JSON e o servidor confere cada correção antes de devolver para a tela. Limites de uso e salas ficam num Redis.'},
+{e:'Etapa 4',k:'chave api servidor seguranca',q:'Por que a chave fica no servidor?',a:'Tudo que roda no navegador pode ser visto por qualquer pessoa. Se a chave ficasse lá, alguém copiaria e gastaria a minha cota. Na função serverless ela fica numa variável de ambiente que só o servidor lê.'},
+{e:'Etapa 4',k:'validacao servidor confere descarta correcao coach.js',q:'O que o servidor confere em cada correção?',a:'(Revise o lib/coach.js e complete com as regras reais.) A ideia é não confiar cegamente no LLM: a resposta é tratada como um dado que precisa ser validado.'},
+{e:'Etapa 4',k:'json texto livre formato saida estruturada',q:'Por que JSON e não texto livre?',a:'A tela precisa de pedaços separados: a resposta, cada correção e a tradução. Com JSON eu sei exatamente o que é cada parte e consigo sublinhar a palavra errada. Se vier inválido, a tela não quebra: mostra só a resposta.'},
+{e:'Etapa 4',k:'avaliacao 80 frases teste montou temperatura',q:'Como você montou a avaliação?',a:'80 frases: 60 com erros típicos de brasileiros, anotados com a correção esperada e o tipo, e 20 frases corretas para medir alarme falso. 36 frases usam padrões que estão na lista do prompt e 24 usam padrões fora dela, para não medir só se ele decorou a lista. Comparei 4 configurações: meu prompt e um genérico, em dois modelos. Temperatura 0 para ser reproduzível.'},
+{e:'Etapa 4',k:'exemplos prompt prova vazamento sobreposicao',q:'Como você garante que os exemplos do prompt não "ensinam a prova"?',a:'Um script compara cada frase de teste com os exemplos do prompt e para com erro se houver sobreposição: 5 palavras seguidas iguais, 60% das palavras em comum ou um trecho de exemplo inteiro dentro da frase. Os tipos de erro podem coincidir, as frases não.'},
+{e:'Etapa 4',k:'93% 95% pior empate intervalo confianca',q:'93% contra 95%: seu prompt é pior?',a:'Não dá para dizer. A diferença é de uma frase em 60, e os intervalos de confiança se sobrepõem quase todo. O que muda muito é a confiabilidade: o genérico gera correções fora das regras em 33% das respostas, o meu em 1%.'},
+{e:'Etapa 4',k:'modelo menor 20b piorou prompt longo',q:'Por que o seu prompt piorou no modelo menor?',a:'O meu prompt tem cerca de 2 mil tokens de regras e exemplos, contra 230 do genérico. O modelo de 20B se perde com tanta instrução e fica conservador, corrigindo menos. Por isso o site usa o modelo maior. Uma solução seria fazer fine-tuning do modelo pequeno com exemplos, em vez de colocar tudo no prompt.'},
+{e:'Etapa 4',k:'melhoraria diferente proximos passos',q:'O que você faria diferente ou melhoraria?',a:'Aumentaria o conjunto de teste, porque 80 frases dão intervalos largos. Testaria também com áudio real, porque hoje avalio só o texto. E faria um fine-tuning de um modelo pequeno para ver se ele chega perto do grande, mais barato e mais rápido.'},
+{e:'Etapa 4',k:'modelo do zero treinou roberta tokenizer nietzsche',q:'Explique o que você treinou.',a:'Um tokenizer Byte-Level BPE e um RoBERTa de 4,5 milhões de parâmetros (4 camadas, 4 cabeças de atenção, dimensão 256) com o livro Crepúsculo dos Ídolos. O objetivo é preencher lacunas: 15% dos tokens são mascarados e o modelo aprende a adivinhar.'},
+{e:'Etapa 4',k:'perplexidade 722 alta 870',q:'Perplexidade de 722 é alta. Por quê?',a:'Porque é um livro só, cerca de 35 mil tokens. Não tem texto suficiente para aprender sentido sem decorar. O importante é a comparação: ele ganha do chute pela frequência (870), então aprendeu algo além de palavras comuns, mas pouco.'},
+{e:'Etapa 4',k:'decorou overfitting early stopping passo 500',q:'Como você sabe que ele decorou?',a:'A partir do passo 500 o loss de treino continuou caindo e o de validação começou a subir. Ele estava melhorando no texto que via e piorando no texto novo. O early stopping parou o treino e guardou a versão do passo 500.'},
+{e:'Etapa 4',k:'mesma validacao checkpoint teste otimista',q:'A mesma validação escolheu o checkpoint e mediu o resultado. É um problema?',a:'É, um pouco: o número fica levemente otimista. O certo seria um terceiro conjunto, de teste, usado só no final. Deixei isso escrito nas limitações do model card.'},
+{e:'Etapa 4',k:'do zero pre-treinado fine-tuning por que',q:'Por que treinar do zero e não ajustar um modelo pronto?',a:'Para aprender como funciona por dentro: tokenização, treino, overfitting. Para um produto, eu usaria um modelo pré-treinado e faria fine-tuning, porque ele já sabe português.'},
+{e:'Etapa 4',k:'prompt rag fine-tuning quando usar',q:'Prompt engineering, RAG ou fine-tuning: quando usar cada um?',a:'Prompt primeiro, porque é rápido e barato. RAG quando o modelo precisa de informação que ele não tem ou que muda, como o cardápio de um restaurante. Fine-tuning quando preciso de um comportamento ou formato consistente, ou quando quero usar um modelo menor e mais barato.'},
+{e:'Etapa 4',k:'case assistente pedidos chatbot atendimento',q:'Case: como você faria um assistente com LLM para dúvidas sobre pedidos?',a:'1) Entender as perguntas mais comuns (atraso, reembolso, item faltando).\n2) RAG com as políticas e os dados do pedido, para responder com base em fatos.\n3) Saída estruturada e validação: se citar um valor de reembolso, o sistema confere.\n4) Passar para um humano quando o modelo não tem certeza ou o caso é sensível.\n5) Avaliação antes de lançar: perguntas reais com respostas esperadas, medindo acerto e alucinação.\n6) Depois: teste A/B, satisfação, taxa de resolução sem humano, custo e latência.'},
+{e:'Etapa 4',k:'barrar lancamento erro grave risco',q:'Que erro faria você barrar o lançamento desse assistente?',a:'Prometer algo que o iFood não cumpre, como um reembolso que não existe, ou expor dados de outro cliente. Esses erros custam confiança e dinheiro, então eu exigiria taxa perto de zero no conjunto de teste antes de liberar.'},
+{e:'Etapa 4',k:'avaliar recomendacao sistema metricas ab',q:'Como você avaliaria um sistema de recomendação?',a:'Offline, com dados históricos: o item que a pessoa pediu aparece entre as primeiras recomendações? Online, com teste A/B: aumentou conversão e pedidos, sem piorar a satisfação? E cuidar de diversidade, para não recomendar sempre a mesma coisa.'},
+// ---------- Etapa 5 ----------
+{e:'Etapa 5',k:'30 dias primeiros comeco',q:'O que você faria nos primeiros 30 dias?',a:'Primeiro entender o problema e o negócio do time: quem usa o que a gente constrói e como o sucesso é medido. Depois ler o código e os dashboards, fazer perguntas e pegar uma tarefa pequena para entregar rápido. Quero chegar ao fim do primeiro mês tendo entregado algo real, mesmo que pequeno.'},
+{e:'Etapa 5',k:'decisao dados baseada',q:'Conte sobre uma decisão que você tomou com base em dados.',a:'No Only English, eu imaginava que o meu prompt detectaria mais erros. A avaliação mostrou que não: ele empatava, mas deixava as respostas mais confiáveis. Também mostrou que no modelo menor ele piorava. Por isso decidi manter o modelo maior no site, mesmo sendo um pouco mais lento.'},
+{e:'Etapa 5',k:'nao sabe travado ajuda',q:'Como você age quando não sabe fazer algo?',a:'Tento entender sozinho por um tempo: documentação, testes pequenos e IA para estudar. Se travar, levo para alguém o que já tentei e onde parei, para a ajuda ser rápida. Não fico dias travado em silêncio.'},
+{e:'Etapa 5',k:'prioriza prioridade muitas coisas',q:'Como você prioriza quando tem muitas coisas para fazer?',a:'Pelo impacto e pelo que bloqueia os outros. Antes desta inscrição eu tinha uma lista grande e fiz primeiro o que mais pesava: avaliar o Only English e publicar o modelo. Deixei o fine-tuning para depois.'},
+{e:'Etapa 5',k:'colega discorda conflito divergencia',q:'Um colega discorda da sua solução. O que você faz?',a:'Ouço o argumento e proponho testar as duas ideias com dados, como eu fiz comparando prompts. Se os dados mostrarem que a dele é melhor, sigo a dele.'},
+{e:'Etapa 5',k:'motiva motivacao',q:'O que te motiva no trabalho?',a:'Ver uma coisa que eu construí sendo usada e saber, com números, que ela funciona.'},
+{e:'Etapa 5',k:'por que escolher contratar diferencial',q:'Por que nós deveríamos te escolher?',a:'Porque eu já faço o que o programa pede, só que sozinho: construo com IA, coloco no ar e meço se funciona, inclusive quando o resultado não é o que eu esperava. Com mentoria e problemas reais, eu evoluo muito rápido.'},
+// ---------- Conceitos ----------
+{e:'Conceitos',k:'token tokenizacao',q:'Token e tokenização',a:'O texto vira pedaços (tokens) antes de entrar no modelo. O GPT-2 usa 21 tokens numa frase em português que o meu tokenizer fez com 11.'},
+{e:'Conceitos',k:'embedding vetor',q:'Embedding',a:'Um vetor de números que representa o significado de um texto. Textos parecidos ficam com vetores próximos.'},
+{e:'Conceitos',k:'overfitting decorar',q:'Overfitting',a:'O modelo decora o treino e piora em dados novos. Eu vi isso na época 31.'},
+{e:'Conceitos',k:'treino validacao teste divisao split',q:'Treino, validação e teste',a:'Treino ensina, validação escolhe o melhor modelo, teste mede o resultado final sem viés.'},
+{e:'Conceitos',k:'perplexidade',q:'Perplexidade',a:'É e elevado ao loss: em quantos tokens o modelo fica em dúvida, em média. Menor é melhor.'},
+{e:'Conceitos',k:'rag busca documentos',q:'RAG',a:'Buscar documentos relevantes e colocá-los no prompt, para o LLM responder com base neles e alucinar menos.'},
+{e:'Conceitos',k:'fine-tuning prompt diferenca pesos',q:'Fine-tuning e prompt',a:'Prompt muda o comportamento sem mexer nos pesos. Fine-tuning ajusta os pesos com exemplos. Use prompt primeiro; fine-tuning quando o prompt não basta ou fica caro.'},
+{e:'Conceitos',k:'lora',q:'LoRA',a:'Fine-tuning que treina só pequenas matrizes extras, e não o modelo inteiro. Mais barato e rápido.'},
+{e:'Conceitos',k:'alucinacao inventa',q:'Alucinação',a:'Quando o LLM inventa uma resposta confiante e errada. Reduz com RAG, validação da saída e avaliação.'},
+{e:'Conceitos',k:'temperatura aleatoriedade',q:'Temperatura',a:'Controla a aleatoriedade. Em 0 a resposta fica mais previsível, por isso usei 0 na avaliação.'},
+{e:'Conceitos',k:'precisao recall metricas',q:'Precisão e recall',a:'Precisão: dos que eu marquei como positivos, quantos eram. Recall: dos positivos reais, quantos eu peguei.'},
+{e:'Conceitos',k:'transformer atencao attention arquitetura',q:'Transformer e atenção',a:'A arquitetura dos LLMs. A atenção deixa cada token olhar para os outros e decidir quais importam.'},
+{e:'Conceitos',k:'recomendacao filtragem colaborativa conteudo',q:'Sistema de recomendação',a:'Filtragem colaborativa (pessoas parecidas gostam de coisas parecidas) e baseada em conteúdo (itens parecidos com o que você já gostou).'},
+// ---------- Números ----------
+{e:'Números',k:'only english 80 frases teste',q:'80 frases de teste',a:'60 com erros de brasileiros e 20 corretas.'},
+{e:'Números',k:'only english 93% 95% detectados',q:'93% contra 95%',a:'Erros detectados: meu prompt contra o genérico (empate).'},
+{e:'Números',k:'only english alarmes falsos 0 de 20',q:'0 de 20 contra 1 de 20',a:'Alarmes falsos em frases corretas.'},
+{e:'Números',k:'only english 1% 33% invalidas',q:'1% contra 33%',a:'Correções inválidas descartadas pelo servidor.'},
+{e:'Números',k:'only english 75% 97% 20b modelo menor',q:'75% contra 97%',a:'No modelo menor (20B), meu prompt longo piorou a detecção.'},
+{e:'Números',k:'only english latencia 0,84',q:'0,84 s',a:'Latência mediana com o modelo de 120B.'},
+{e:'Números',k:'modelo zero 4,5 milhoes parametros',q:'4,5 milhões',a:'Parâmetros do RoBERTa.'},
+{e:'Números',k:'modelo zero 722 870 perplexidade',q:'722 contra 870',a:'Perplexidade de validação: meu modelo contra chute pela frequência.'},
+{e:'Números',k:'modelo zero 10,6% 7,0% acerto',q:'10,6% contra 7,0%',a:'Acerto no primeiro palpite.'},
+{e:'Números',k:'modelo zero passo 500 epoca 31',q:'Passo 500 (época 31)',a:'Quando a validação parou de melhorar e ele começou a decorar.'},
+{e:'Números',k:'modelo zero 11 21 tokens gpt-2',q:'11 contra 21 tokens',a:'Minha frase de teste no meu tokenizer contra o GPT-2.'},
+{e:'Números',k:'tricolor 12 tabelas 29 verificacoes',q:'12 tabelas, 29 verificações',a:'Tricolor em Números: base relacional com testes automáticos de integridade.'},
+{e:'Números',k:'zelos 7 tabelas mysql',q:'7 tabelas MySQL',a:'Zelos: sistema de chamados com 3 perfis de acesso.'},
+// ---------- Cultura ----------
+{e:'Cultura',k:'agil falhe rapido aprenda',q:'Ágil: falhe rápido e aprenda',a:'O modelo do zero parecia ótimo, a validação mostrou que ele decorava, e eu corrigi com early stopping. O prompt não detectou mais erros, e eu mudei a decisão com base nisso.'},
+{e:'Cultura',k:'conflitos produtivos honestidade feedback',q:'Conflitos produtivos',a:'Publiquei um resultado que não me favorecia (93% contra 95%) em vez de esconder. Quando uma revisão apontou que o notebook contradizia o resultado, corrigi sem me defender.'},
+{e:'Cultura',k:'mentalidade de dono responsabilidade',q:'Mentalidade de dono',a:'Fiz o Only English de ponta a ponta: ideia, servidor, segurança da chave, avaliação e deploy.'},
+{e:'Cultura',k:'80/20 priorize entregue',q:'Priorize 80/20 e entregue',a:'Antes da inscrição, fiz primeiro o que mais pesava (avaliação e Hugging Face) e deixei o fine-tuning para depois.'},
+{e:'Cultura',k:'ambidestria eficiencia inovacao',q:'Ambidestria',a:'Mantive no site o modelo grande, que é confiável, enquanto planejo testar um modelo pequeno com fine-tuning, mais barato.'},
+{e:'Cultura',k:'sonhe grande impossivel',q:'Sonhe grande',a:'Treinei um modelo de linguagem do zero num PC sem GPU, reduzindo o tamanho até caber.'},
+{e:'Cultura',k:'gente pessoas diversidade colaboracao',q:'Gente',a:'O modo sala de aula do Only English foi pensado para professores. O Remama apoia uma ONG de mulheres que passaram pelo câncer de mama. No Zelos, trabalhei em equipe.'},
+// ---------- Perguntas ----------
+{e:'Para perguntar',k:'pergunta perguntas fazer entrevistador rh duvidas',q:'Para o RH (Talent Acquisition)',a:'Como é a rotina de um estagiário do GenAI na primeira semana?\nO que diferencia os participantes que foram efetivados na primeira edição?'},
+{e:'Para perguntar',k:'pergunta perguntas fazer tecnica duvidas',q:'Para a entrevista técnica',a:'Como vocês avaliam um modelo de IA antes de colocar em produção?\nQuando um modelo novo é lançado, como vocês sabem que ele é melhor que o anterior?\nQue tipo de problema um estagiário de Engenharia de IA costuma pegar?'},
+{e:'Para perguntar',k:'pergunta perguntas fazer gestor duvidas',q:'Para o gestor (Hiring Manager)',a:'O que seria um primeiro semestre de sucesso para alguém no seu time?\nQual é o maior desafio de IA do time hoje?'}
+];
+const ETAPAS=['Todas','Etapa 1','Etapa 3','Etapa 4','Etapa 5','Conceitos','Números','Cultura','Para perguntar'];
+const norm=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+D.forEach(d=>{d.nk=norm(d.k);d.nq=norm(d.q);d.na=norm(d.a.replace(/<[^>]+>/g,''))});
+const $=id=>document.getElementById(id);
+let filtro='Todas',treino=false,atual=null,mostrou=false,t0=0,tick=null;
+function marca(html,termos){
+  if(!termos.length)return html;
+  return html.split(/(<[^>]+>)/).map(p=>{
+    if(p.startsWith('<'))return p;
+    const n=norm(p);let out='',i=0;const hits=[];
+    termos.forEach(t=>{let j=n.indexOf(t);while(j>-1){hits.push([j,j+t.length]);j=n.indexOf(t,j+t.length)}});
+    hits.sort((a,b)=>a[0]-b[0]);
+    hits.forEach(([a,b])=>{if(a<i)return;out+=p.slice(i,a)+'<mark>'+p.slice(a,b)+'</mark>';i=b});
+    return out+p.slice(i);
+  }).join('');
+}
+function busca(){
+  const termos=norm($('busca').value).split(/\s+/).filter(t=>t.length>0);
+  let r=D.filter(d=>filtro==='Todas'||d.e===filtro);
+  if(termos.length){
+    r=r.map(d=>{let s=0;for(const t of termos){const a=d.nk.includes(t)*3+d.nq.includes(t)*2+d.na.includes(t);if(!a)return null;s+=a}return [s,d]}).filter(Boolean).sort((a,b)=>b[0]-a[0]).map(x=>x[1]);
+  }
+  return {r,termos};
+}
+function chips(){
+  $('chips').innerHTML=ETAPAS.map(e=>`<button type="button" class="chip" aria-pressed="${e===filtro}" data-e="${e}">${e}</button>`).join('');
+}
+function lista(){
+  const {r,termos}=busca();
+  $('conta').textContent=r.length+(r.length===1?' resposta':' respostas');
+  $('lista').innerHTML=r.length?r.map(d=>`<article class="ficha"><div class="et">${d.e}</div><h2 class="q">${marca(d.q,termos)}</h2><p class="a">${marca(d.a,termos)}</p></article>`).join(''):'<div class="vazio">Nada encontrado. Tente outra palavra, como "erro", "equipe" ou "projeto".</div>';
+}
+function sorteia(){
+  const {r}=busca();const pool=r.filter(d=>d.e!=='Números'&&d.e!=='Para perguntar');
+  const base=pool.length?pool:r;if(!base.length){atual=null;return}
+  let n;do{n=base[Math.floor(Math.random()*base.length)]}while(base.length>1&&n===atual);
+  atual=n;mostrou=false;t0=Date.now();
+}
+function relogio(){const s=Math.floor((Date.now()-t0)/1000);const el=$('rel');if(el)el.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+function tela(){
+  clearInterval(tick);
+  if(!treino){$('btnTreino').textContent='Modo treino';$('conta').hidden=false;lista();return}
+  $('btnTreino').textContent='Voltar à busca';$('conta').hidden=true;
+  if(!atual){$('lista').innerHTML='<div class="vazio">Nenhuma pergunta neste filtro.</div>';return}
+  $('lista').innerHTML=`<section class="treino" aria-live="polite"><div class="et" style="color:var(--redk);font-weight:600;font-size:13px">${atual.e}</div><h2 class="q">${atual.q}</h2><p class="a ${mostrou?'':'oculta'}">${mostrou?atual.a:'Responda em voz alta, em 1 a 2 minutos. Depois compare.'}</p><div class="acoes"><button type="button" class="acao pri" id="ver">${mostrou?'Esconder':'Mostrar resposta'}</button><button type="button" class="acao" id="prox">Próxima pergunta</button><span class="relogio" id="rel">0:00</span></div></section>`;
+  relogio();if(!mostrou)tick=setInterval(relogio,1000);
+}
+$('busca').addEventListener('input',()=>{if(treino){sorteia()}tela()});
+$('chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;filtro=b.dataset.e;chips();if(treino)sorteia();tela()});
+$('btnTreino').addEventListener('click',()=>{treino=!treino;if(treino)sorteia();tela()});
+$('lista').addEventListener('click',e=>{
+  if(e.target.id==='ver'){mostrou=!mostrou;tela()}
+  if(e.target.id==='prox'){sorteia();tela()}
+});
+document.querySelector('.dicas').addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(!b)return;$('busca').value=b.dataset.k;treino=false;tela();$('busca').focus()});
+chips();tela();
+}
+</script>
+</body>
+</html>
