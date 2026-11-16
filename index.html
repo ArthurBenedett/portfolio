@@ -161,12 +161,13 @@
   .midia.logo { display: grid; place-items: center; padding: clamp(24px, 4vw, 56px); }
   .midia.logo img { max-width: 380px; width: 100%; }
 
-  .comparacao { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0 8px; }
-  .comparacao div { border-radius: 14px; padding: 16px; border: 1px solid var(--line); background: var(--bg); }
-  .comparacao .meu { border-color: var(--accent); }
-  .comparacao b { display: block; font: 500 13px/1.3 var(--font); color: var(--muted); margin-bottom: 8px; }
-  .comparacao .meu b { color: var(--accent); }
-  .comparacao span { display: block; font: 400 14px/1.7 var(--mono); }
+  .comparacao { width: 100%; border-collapse: separate; border-spacing: 0; margin: 20px 0 8px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--bg); }
+  .comparacao caption { caption-side: bottom; text-align: left; font-size: 13px; color: var(--muted); padding-top: 8px; }
+  .comparacao th, .comparacao td { padding: 12px 14px; text-align: left; border-top: 1px solid var(--line); }
+  .comparacao thead th { border-top: 0; font: 500 13px/1.3 var(--font); color: var(--muted); }
+  .comparacao tbody th { font: 400 14px/1.4 var(--font); color: var(--muted); }
+  .comparacao td { font: 500 15px/1.4 var(--mono); white-space: nowrap; }
+  .comparacao .meu { color: var(--accent); background: color-mix(in srgb, var(--accent) 7%, transparent); }
   .nota { font-size: 15px; color: var(--muted); margin-top: 14px; }
 
   /* ---------- outros projetos (bento de 2) ---------- */
@@ -219,6 +220,34 @@
 
   /* ---------- estado inicial das animações (só com JS e sem movimento reduzido) ---------- */
   .js-anim [data-revelar], .js-anim .hero h1, .js-anim .hero .sub, .js-anim .hero .acoes, .js-anim .foto { visibility: hidden; }
+  /* ---------- celular ---------- */
+  @media (max-width: 640px) {
+    .hero { padding: 96px 0 40px; }
+    .hero h1 { font-size: 42px; margin-bottom: 20px; }
+    .hero .sub { font-size: 17px; margin-bottom: 28px; }
+    .hero .acoes .btn { flex: 1; justify-content: center; }
+    .numeros { padding: 8px 0 64px; }
+    .numeros dl { gap: 28px 20px; padding-top: 28px; }
+    .numeros dt { font-size: 34px; gap: 6px; }
+    .numeros dd { font-size: 14px; }
+    .projetos, .outros, .formacao { padding: 24px 0 72px; }
+    .habilidades { padding: 64px 0; }
+    .contato { padding: 72px 0 88px; }
+    .intro-secao { font-size: 16px; margin-bottom: 32px; }
+    .pilha { gap: 24px; }
+    .cartao-projeto .dentro { padding: 22px; gap: 24px; border-radius: 22px; }
+    .cartao-projeto .midia { order: 2; }
+    .cartao-projeto h3 { font-size: 30px; }
+    .cartao-projeto p { font-size: 16px; }
+    .tecnologias { margin: 16px 0 20px; gap: 6px; }
+    .tecnologias li { font-size: 12px; padding: 7px 10px; }
+    .comparacao th, .comparacao td { padding: 10px; }
+    .comparacao tbody th { font-size: 13px; }
+    .comparacao td { font-size: 14px; }
+    .links { flex-direction: column; gap: 14px; align-items: flex-start; }
+    .bloco { padding: 22px; border-radius: 22px; }
+    .bloco h3 { font-size: 22px; }
+  }
 </style>
 </head>
 <body>
@@ -291,10 +320,15 @@
               <h3>Only English!</h3>
               <p class="linha-fina">Coach de conversação em inglês por voz, com LLM especializado</p>
               <p>Você fala, o navegador transcreve e o LLM responde, corrige e traduz. O prompt foca nos erros típicos de brasileiros, como "I have 20 years", e muda a explicação conforme o nível. Também tem modo sala de aula.</p>
-              <div class="comparacao" aria-label="Avaliação em 80 frases, modelo gpt-oss-120b">
-                <div class="meu"><b>Meu prompt</b><span>93% detectados<br>0 de 20 alarmes<br>1% inválidas</span></div>
-                <div><b>Prompt genérico</b><span>95% detectados<br>1 de 20 alarmes<br>33% inválidas</span></div>
-              </div>
+              <table class="comparacao">
+                <caption>Avaliação em 80 frases (gpt-oss-120b)</caption>
+                <thead><tr><th scope="col"></th><th scope="col" class="meu">Meu prompt</th><th scope="col">Genérico</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row">Erros detectados</th><td class="meu">93%</td><td>95%</td></tr>
+                  <tr><th scope="row">Alarmes falsos</th><td class="meu">0 de 20</td><td>1 de 20</td></tr>
+                  <tr><th scope="row">Correções inválidas</th><td class="meu">1%</td><td>33%</td></tr>
+                </tbody>
+              </table>
               <p class="nota">Detectam quase igual, mas o meu deixa as respostas muito mais confiáveis.</p>
               <ul class="tecnologias" aria-label="Tecnologias">
                 <li>LLM via Groq</li><li>Prompt engineering</li><li>JSON validado</li><li>Serverless</li><li>Vercel</li>
