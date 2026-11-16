@@ -2,7 +2,7 @@
 // 1. entrada do topo: mostra primeiro o título, depois o resto (hierarquia)
 // 2. blocos que aparecem ao rolar: leitura em ordem
 // 3. números que contam: chamam atenção para os resultados
-// 4. pilha de projetos: um projeto empurra o outro, em sequência
+// 4. projetos aparecem ao entrar na tela
 // 5. botão do contato que segue o mouse: resposta ao gesto
 (function () {
   var html = document.documentElement;
@@ -84,22 +84,9 @@
     });
   });
 
-  // 4. Pilha de projetos: só em telas grandes, onde o cartão cabe inteiro.
-  var mm = gsap.matchMedia();
-  mm.add('(min-width: 960px) and (min-height: 700px)', function () {
-    var cartoes = gsap.utils.toArray('.cartao-projeto');
-    cartoes.forEach(function (cartao, i) {
-      if (i === cartoes.length - 1) return;
-      gsap.to(cartao.querySelector('.dentro'), {
-        scale: 0.92, autoAlpha: 0.45, ease: 'none',
-        scrollTrigger: { trigger: cartoes[i + 1], start: 'top bottom', end: 'top 96px', scrub: true }
-      });
-    });
-  });
-  mm.add('(max-width: 959px), (max-height: 699px)', function () {
-    gsap.utils.toArray('.cartao-projeto').forEach(function (c) {
-      gsap.from(c, { y: 48, autoAlpha: 0, duration: 1, ease: suave, scrollTrigger: { trigger: c, start: 'top 88%', once: true } });
-    });
+  // 4. Projetos: cada cartão sobe e aparece quando entra na tela.
+  gsap.utils.toArray('.cartao-projeto').forEach(function (c) {
+    gsap.from(c, { y: 48, autoAlpha: 0, duration: 1, ease: suave, scrollTrigger: { trigger: c, start: 'top 88%', once: true } });
   });
 
   // 5. Botão do contato puxa levemente para o mouse (só com mouse de verdade).
